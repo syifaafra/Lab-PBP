@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 # Create your views here.
 @login_required(login_url='/wishlist/login/')
@@ -21,7 +22,33 @@ def show_wishlist(request):
     'last_login': request.COOKIES['last_login'],
     }
     return render(request, "wishlist.html", context)
-data_barang_wishlist = BarangWishlist.objects.all()
+
+@login_required(login_url='/wishlist/login/')
+def show_wishlist_ajax(request):
+    context = {
+    'nama': 'Syifa Afra Kamila Mumtaz',
+    'last_login': request.COOKIES['last_login'],
+    }
+    return render(request, "wishlist_ajax.html", context)
+
+def add_wishlist_ajax(request: HttpRequest):
+     if request.method == "POST":
+         nama_barang = request.POST.get("nama_barang")
+         harga_barang = request.POST.get("harga_barang")
+         deskripsi = request.POST.get("deskripsi")
+
+         new_barang = BarangWishlist(
+             nama_barang=nama_barang,
+             harga_barang=harga_barang,
+             deskripsi=deskripsi,
+         )
+         new_barang.save()
+         return HttpResponse(
+             serializers.serialize("json", [new_barang]),
+             content_type="application/json",
+         )
+
+     return HttpResponse("Invalid method", status_code=405)
 
 def show_xml(request):
     data = BarangWishlist.objects.all()
