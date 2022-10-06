@@ -22,7 +22,7 @@ def show_wishlist(request):
     'last_login': request.COOKIES['last_login'],
     }
     return render(request, "wishlist.html", context)
-
+data_barang_wishlist = BarangWishlist.objects.all()
 @login_required(login_url='/wishlist/login/')
 def show_wishlist_ajax(request):
     context = {
